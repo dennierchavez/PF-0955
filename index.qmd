@@ -1,0 +1,241 @@
+---
+title: "Práctica Ecohidrología"
+format: html
+author: Dennier Chávez Garro
+echo: false
+---
+
+# CARGAR DATOS
+
+## Violin plot para evap_soim sept26
+## paper Esteban 
+
+```{r}
+#|label: carga-paquetes-datos
+
+library(readr)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(forcats)
+library(stringr)
+library(sf)
+
+# Directorio de datos en el repositorio del curso
+
+delta_evap <- read_csv("https://raw.githubusercontent.com/dennierchavez/PF-0955/refs/heads/main/delta_evap.csv")
+delta_soim <- read_csv("https://raw.githubusercontent.com/dennierchavez/PF-0955/refs/heads/main/delta_soim.csv")
+names(delta_evap)
+names(delta_soim)
+
+```
+
+## ------------------------------------------------------------
+## 1. Climatologia: 
+
+```{r}
+
+climatology_labels <- c(
+  "1" = "Transition",
+  "2" = "Non-seasonal",
+  "3" = "Seasonal"
+)
+
+```
+
+### 2. Pasar cada archivo de ancho a largo 
+
+```{r}
+to_long <- function(df, variable_label) {
+  scenario_cols <- setdiff(names(df), c("basin", "cluster_3"))
+  
+  df %>%
+    pivot_longer(cols = all_of(scenario_cols),
+                 names_to = "scenario", values_to = "delta") %>%
+    mutate(variable = variable_label)
+}
+
+datos_long <- bind_rows(
+  to_long(delta_evap, "Evapotranspiration"),
+  to_long(delta_soim, "Soil water storage")
+) %>%
+  mutate(
+    climatology = recode(as.character(cluster_3), !!!climatology_labels),
+    climatology = fct_relevel(climatology, "Seasonal", "Transition", "Non-seasonal"),
+    
+    ## no contiene literalmente "15", "25", "50"
+    scenario = case_when(
+      str_detect(scenario, "15") ~ "afforestation_15",
+      str_detect(scenario, "25") ~ "deforestation_25",
+      str_detect(scenario, "50") ~ "deforestation_50",
+      TRUE ~ NA_character_
+    ),
+    scenario = fct_relevel(scenario, "afforestation_15", "deforestation_25", "deforestation_50"),
+    
+    variable = fct_relevel(variable, "Evapotranspiration", "Soil water storage")
+  )
+
+
+```
+
+
+## Etiquetas del eje x
+
+```{r}
+
+scenario_labels <- c(
+  "afforestation_15" = "+15%",
+  "deforestation_25" = "-25%",
+  "deforestation_50" = "-50%"
+)
+```
+
+## Paleta aproximada a la imagen de referencia
+## (Seasonal = naranja, Transition = amarillo, Non-seasonal = verde)
+
+
+```{r}
+
+climatology_colors <- c(
+  "Seasonal"     = "#F5A623",
+  "Transition"   = "#F6D965",
+  "Non-seasonal" = "#4C9A2A"
+)
+
+```
+
+
+
+
+
+
+
+
+
+
+## 3. Panel compuesto: Evapotranspiracion | Soil water storage
+
+```{r}
+
+p_et_soim <- ggplot(datos_long, aes(x = scenario, y = delta, fill = climatology)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey40") +
+  geom_violin(
+    trim = TRUE,
+    scale = "width",
+    position = position_dodge(width = 0.8),
+    alpha = 0.9,
+    color = "grey20",
+    linewidth = 0.3
+  ) +
+  geom_boxplot(
+    aes(group = interaction(scenario, climatology)),
+    width = 0.12,
+    outlier.shape = NA,
+    position = position_dodge(width = 0.8),
+    fill = "white",
+    alpha = 0.7
+  ) +
+  facet_wrap(~ variable, ncol = 2) +
+  scale_x_discrete(labels = scenario_labels) +
+  scale_fill_manual(values = climatology_colors, name = "Hydrometeorological clusters") +
+  labs(
+    x = "Forest cover scenarios",
+    y = "Relative variation (%)"
+  ) +
+  theme_bw(base_size = 12) +
+  theme(
+    strip.background = element_rect(fill = "grey95", color = NA),
+    strip.text = element_text(face = "bold"),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  )
+
+print(p_et_soim)
+
+ggsave(
+  "violin_ET_soim2.pdf",
+  plot = p_et_soim, width = 10, height = 5, dpi = 1000
+)
+
+```
+
+```{r}
+
+#| label: Regiones de cuencas
+
+# 1. Definir la ruta del archivo y cargarlo
+ruta_geojson <- "https://drive.google.com/uc?export=download&id=12pXvOg9mGSxkqmCMhvA1HyLbzp3W3yMW&usp" 
+# Ajusta a la ruta de tu archivo local
+cuencas_sf <- read_sf(ruta_geojson, quiet = FALSE)
+
+# 2. Limpieza espacial y de atributos
+# El archivo tiene coordenadas 3D (XYZ) con Z = 0.0 y nombres de columnas con espacios ("Forest Cover")
+cuencas_limpias <- cuencas_sf %>%
+  st_zm(drop = TRUE, what = "ZM") %>%       # Eliminar dimensión Z para evitar errores en geoprocesos
+  rename(forest_cover = `Forest Cover`) %>% # Renombrar columna con espacio
+  st_make_valid()                           # Asegurar topología válida
+
+# Nota: Existen múltiples polígonos con el mismo 'subid' (ej. subid = 2).
+# Si requieres fusionar los polígonos fragmentados por subcuenca en Multipolígonos únicos:
+cuencas_agrupadas <- cuencas_limpias %>%
+  group_by(subid, name, maindown, elev_mean, area, parreg, petmodel, forest_cover) %>%
+  summarise(geometry = st_union(geometry), .groups = "drop")
+
+# 3. Reproyección a CRTM05 (EPSG:8909) para análisis métrico en Costa Rica
+cuencas_crtm05 <- st_transform(cuencas_agrupadas, crs = 8909)
+
+# 4. Inspección rápida de la estructura y el CRS
+print(st_crs(cuencas_crtm05))
+glimpse(cuencas_crtm05)
+
+# 5. Visualización temática con ggplot2
+ggplot(data = cuencas_crtm05) +
+  geom_sf(aes(fill = elev_mean), color = "gray20", linewidth = 0.3) +
+  scale_fill_gradientn(
+    colors = terrain.colors(100), 
+    name = "Elevación Media\n(msnm.)") +
+  labs(
+    title = "Regiones de Cuencas (Basins_regions)",
+    subtitle = "Proyección CRTM05 (EPSG:8909)",
+    caption = "Fuente: Datos GeoJSON procesados con sf"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    legend.position = "right"
+  )
+
+cuencas_sf <- st_read(ruta_geojson, quiet = FALSE)
+
+# 3. Limpieza, transformación a porcentaje y reproyección a CRTM05 (EPSG:8908)
+cuencas_crtm05 <- cuencas_sf %>%
+  st_zm(drop = TRUE, what = "ZM") %>%       # Eliminar dimensión Z
+  rename(forest_cover = any_of(c("Forest.Cover", "Forest Cover"))) %>% # Unificar nombre de columna
+  st_make_valid() %>%                       # Corregir geometrías
+  mutate(forest_cover_pct = forest_cover * 100) %>% # Convertir a porcentaje (0 a 100)
+  group_by(subid, name, maindown, elev_mean, area, parreg, petmodel, forest_cover_pct) %>%
+  summarise(geometry = st_union(geometry), .groups = "drop") %>%
+  st_transform(crs = 8908)                  # Reproyectar a coordenadas métricas de Costa Rica
+
+# 4. Generación del gráfico con ggplot2 usando estilo terreno
+ggplot(data = cuencas_crtm05) +
+  geom_sf(aes(fill = forest_cover_pct), color = "gray30", linewidth = 0.3) +
+  scale_fill_gradientn(
+    colors = c("lightyellow", "darkgreen"),
+    limits = c(0, 100),                      # Fuerza los límites de la escala de 0 a 100
+    name = "Cobertura\nForestal (%)",
+    labels = function(x) paste0(x, "%")      # Añade el símbolo % automáticamente
+  ) +
+  labs(
+    title = "Porcentaje de Cobertura Forestal por Cuenca",
+    subtitle = "Proyección CRTM05 (EPSG:8908)",
+    caption = "Fuente: Basins_ForestCover.geojson"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    legend.position = "right",
+    legend.title = element_text(face = "bold", size = 10)
+  )
+```
+
