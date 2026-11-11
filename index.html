@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Dennier Chávez Garro">
+<meta name="author" content="Daniela Moya Víquez, Melissa Rodríguez Campos, Dennier Chávez Garro">
 
 <title>Práctica Ecohidrología</title>
 <style>
@@ -30,25 +30,46 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="ecohidrologia_files/libs/clipboard/clipboard.min.js"></script>
-<script src="ecohidrologia_files/libs/quarto-html/quarto.js" type="module"></script>
-<script src="ecohidrologia_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="ecohidrologia_files/libs/quarto-html/popper.min.js"></script>
-<script src="ecohidrologia_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="ecohidrologia_files/libs/quarto-html/anchor.min.js"></script>
-<link href="ecohidrologia_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="ecohidrologia_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="ecohidrologia_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="ecohidrologia_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="ecohidrologia_files/libs/bootstrap/bootstrap-215b371544c282197b31c8aa00ce3677.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="index_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="index_files/libs/quarto-html/anchor.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="index_files/libs/bootstrap/bootstrap-215b371544c282197b31c8aa00ce3677.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
 
-<body class="fullcontent quarto-light">
+<body class="quarto-light">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#cargar-datos-de-los-repositorios" id="toc-cargar-datos-de-los-repositorios" class="nav-link active" data-scroll-target="#cargar-datos-de-los-repositorios">Cargar datos de los repositorios</a>
+  <ul class="collapse">
+  <li><a href="#violin-plot-para-evap_soim-setiembre-2026" id="toc-violin-plot-para-evap_soim-setiembre-2026" class="nav-link" data-scroll-target="#violin-plot-para-evap_soim-setiembre-2026">Violin plot para evap_soim setiembre 2026</a></li>
+  <li><a href="#codigo-suministrado-por-prof.-esteban-a.-montero-sánchez-msc-y-modificado-por-los-estudiantes-d.-moya-m.-rodriguez-y-d.-chávez" id="toc-codigo-suministrado-por-prof.-esteban-a.-montero-sánchez-msc-y-modificado-por-los-estudiantes-d.-moya-m.-rodriguez-y-d.-chávez" class="nav-link" data-scroll-target="#codigo-suministrado-por-prof.-esteban-a.-montero-sánchez-msc-y-modificado-por-los-estudiantes-d.-moya-m.-rodriguez-y-d.-chávez">Codigo suministrado por Prof.&nbsp;Esteban A. Montero-Sánchez, MSc y, modificado por los estudiantes D. Moya, M. Rodriguez y D. Chávez</a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section">————————————————————</a></li>
+  <li><a href="#climatologia" id="toc-climatologia" class="nav-link" data-scroll-target="#climatologia">1. Climatologia:</a>
+  <ul class="collapse">
+  <li><a href="#pasar-cada-archivo-de-ancho-a-largo" id="toc-pasar-cada-archivo-de-ancho-a-largo" class="nav-link" data-scroll-target="#pasar-cada-archivo-de-ancho-a-largo">2. Pasar cada archivo de ancho a largo</a></li>
+  </ul></li>
+  <li><a href="#etiquetas-del-eje-x" id="toc-etiquetas-del-eje-x" class="nav-link" data-scroll-target="#etiquetas-del-eje-x">Etiquetas del eje x</a></li>
+  <li><a href="#paleta-aproximada-a-la-imagen-de-referencia" id="toc-paleta-aproximada-a-la-imagen-de-referencia" class="nav-link" data-scroll-target="#paleta-aproximada-a-la-imagen-de-referencia">Paleta aproximada a la imagen de referencia</a></li>
+  <li><a href="#seasonal-naranja-transition-amarillo-non-seasonal-verde" id="toc-seasonal-naranja-transition-amarillo-non-seasonal-verde" class="nav-link" data-scroll-target="#seasonal-naranja-transition-amarillo-non-seasonal-verde">(Seasonal = naranja, Transition = amarillo, Non-seasonal = verde)</a></li>
+  <li><a href="#panel-compuesto-evapotranspiracion-soil-water-storage" id="toc-panel-compuesto-evapotranspiracion-soil-water-storage" class="nav-link" data-scroll-target="#panel-compuesto-evapotranspiracion-soil-water-storage">3. Panel compuesto: Evapotranspiracion | Soil water storage</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -63,7 +84,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Dennier Chávez Garro </p>
+             <p>Daniela Moya Víquez, Melissa Rodríguez Campos, Dennier Chávez Garro </p>
           </div>
   </div>
     
@@ -76,13 +97,13 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="cargar-datos" class="level1">
-<h1>CARGAR DATOS</h1>
-<section id="violin-plot-para-evap_soim-sept26" class="level2">
-<h2 class="anchored" data-anchor-id="violin-plot-para-evap_soim-sept26">Violin plot para evap_soim sept26</h2>
+<section id="cargar-datos-de-los-repositorios" class="level1">
+<h1>Cargar datos de los repositorios</h1>
+<section id="violin-plot-para-evap_soim-setiembre-2026" class="level2">
+<h2 class="anchored" data-anchor-id="violin-plot-para-evap_soim-setiembre-2026">Violin plot para evap_soim setiembre 2026</h2>
 </section>
-<section id="paper-esteban" class="level2">
-<h2 class="anchored" data-anchor-id="paper-esteban">paper Esteban</h2>
+<section id="codigo-suministrado-por-prof.-esteban-a.-montero-sánchez-msc-y-modificado-por-los-estudiantes-d.-moya-m.-rodriguez-y-d.-chávez" class="level2">
+<h2 class="anchored" data-anchor-id="codigo-suministrado-por-prof.-esteban-a.-montero-sánchez-msc-y-modificado-por-los-estudiantes-d.-moya-m.-rodriguez-y-d.-chávez">Codigo suministrado por Prof.&nbsp;Esteban A. Montero-Sánchez, MSc y, modificado por los estudiantes D. Moya, M. Rodriguez y D. Chávez</h2>
 <div class="cell">
 <div class="cell-output cell-output-stderr">
 <pre><code>
@@ -151,7 +172,7 @@ dbl (5): basin, 15% Aforestation, 25% Deforestation, 50% Deforestation, clus...
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="ecohidrologia_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -228,7 +249,7 @@ $ geometry     &lt;GEOMETRY [m]&gt; POLYGON ((860389 1057539, 8..., MULTIPOLYGON
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="ecohidrologia_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -246,7 +267,7 @@ Geodetic CRS:  WGS 84</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="ecohidrologia_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>

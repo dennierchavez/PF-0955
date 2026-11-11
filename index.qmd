@@ -1,14 +1,18 @@
 ---
 title: "Práctica Ecohidrología"
 format: html
-author: Dennier Chávez Garro
+author: Daniela Moya Víquez, Melissa Rodríguez Campos, Dennier Chávez Garro
+toc: true
+
+
 echo: false
 ---
 
-# CARGAR DATOS
+# Cargar datos de los repositorios
 
-## Violin plot para evap_soim sept26
-## paper Esteban 
+## Violin plot para evap_soim setiembre 2026
+
+## Codigo suministrado por Prof. Esteban A. Montero-Sánchez,  MSc y, modificado por los estudiantes D. Moya, M. Rodriguez y D. Chávez 
 
 ```{r}
 #|label: carga-paquetes-datos
@@ -31,7 +35,8 @@ names(delta_soim)
 ```
 
 ## ------------------------------------------------------------
-## 1. Climatologia: 
+
+## 1. Climatologia:
 
 ```{r}
 
@@ -43,7 +48,7 @@ climatology_labels <- c(
 
 ```
 
-### 2. Pasar cada archivo de ancho a largo 
+### 2. Pasar cada archivo de ancho a largo
 
 ```{r}
 to_long <- function(df, variable_label) {
@@ -78,7 +83,6 @@ datos_long <- bind_rows(
 
 ```
 
-
 ## Etiquetas del eje x
 
 ```{r}
@@ -91,8 +95,8 @@ scenario_labels <- c(
 ```
 
 ## Paleta aproximada a la imagen de referencia
-## (Seasonal = naranja, Transition = amarillo, Non-seasonal = verde)
 
+## (Seasonal = naranja, Transition = amarillo, Non-seasonal = verde)
 
 ```{r}
 
@@ -104,16 +108,7 @@ climatology_colors <- c(
 
 ```
 
-
-
-
-
-
-
-
-
-
-## 3. Panel compuesto: Evapotranspiracion | Soil water storage
+## 3. Panel compuesto: Evapotranspiracion \| Soil water storage
 
 ```{r}
 
@@ -238,4 +233,3 @@ ggplot(data = cuencas_crtm05) +
     legend.title = element_text(face = "bold", size = 10)
   )
 ```
-
