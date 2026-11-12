@@ -179,7 +179,7 @@ ggplot(data = cuencas_crtm05) +
 
 Es un gráfico adecuado para mostrar las densidades de probabilidades que toman los conjuntos de datos. Muestra información sobre que valores se “repiten” más en los datos. Es buena práctica combinarlo con medidas de tendencia central y dispersión, como un boxplot. El código que genera los gráficos fue suministrado por el Prof. Esteban A. Montero-Sánchez, MSc y, modificado por los estudiantes D. Moya, M. Rodríguez y D. Chávez.
 
-## ------------------------------------------------------------
+-------------------------------------------------------------------------
 
 ## 1. Climatología:
 
@@ -320,7 +320,7 @@ El gráfico resultante evalúa la variación relativa (%) de la evapotranspiraci
 
 Desde una perspectiva ecohidrológica, el gráfico demuestra que los bosques actúan como reguladores del ciclo del agua. La reducción drástica de la cobertura boscosa (-50%) no solo disminuye el flujo de vapor de agua hacia la atmósfera (ET), sino que impacta comprometiendo la recarga y la disponibilidad de humedad en el suelo. Esto advierte sobre los riesgos asociados a la deforestación en distintas regiones climáticas.
 
-# Unión de archivo GeoJson con los archivos .csv
+# Unión de archivo GeoJSON con los archivos .csv
 
 ```{r}
 #| label: Unir capa espacial
@@ -328,23 +328,17 @@ Desde una perspectiva ecohidrológica, el gráfico demuestra que los bosques act
 #| echo: true
 #| warning: false
 
-# 1. URL limpia (sin paréntesis extra y sin '&usp' al final)
-url_geojson <- "https://drive.google.com/uc?export=download&id=12pXvOg9mGSxkqmCMhvA1HyLbzp3W3yMW"
+# 1. Define la ruta de acceso al archivo GeoJSON
+url_geojson <- "/vsicurl/https://drive.google.com/uc?export=download&id=12pXvOg9mGSxkqmCMhvA1HyLbzp3W3yMW"
 
-# 2. Descargar a un archivo temporal con extensión .geojson (modo binario "wb")
-temp_geojson <- tempfile(fileext = ".geojson")
-download.file(url_geojson, destfile = temp_geojson, mode = "wb", quiet = FALSE)
 
-# 3. Leer el archivo temporal con sf
-cuencas_sf <- st_read(temp_geojson, quiet = FALSE)
 
 # 2. Definir rutas de los archivos (ajusta los nombres de tus CSV)
-#ruta_geojson <- "https://drive.google.com/uc?export=download&id=12pXvOg9mGSxkqmCMhvA1HyLbzp3W3yMW&usp"
 ruta_csv1    <- "https://raw.githubusercontent.com/dennierchavez/PF-0955/refs/heads/main/delta_evap.csv"
 ruta_csv2    <- "https://raw.githubusercontent.com/dennierchavez/PF-0955/refs/heads/main/delta_soim.csv"
 
 # 3. Cargar el GeoJSON
-cuencas_sf <- st_read(ruta_geojson, quiet = FALSE)
+cuencas_sf <- st_read(url_geojson, quiet = FALSE)
 
 # 4. Cargar y estandarizar los dos CSV
 # rename_with(tolower) asegura que 'Basin' o 'BASIN' pase a 'basin'
